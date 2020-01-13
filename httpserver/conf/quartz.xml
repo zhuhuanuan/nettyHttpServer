@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--     每5分钟任务组
+    <bean id="timeTask" class="com.xengine.gate.count.task.TimeTask"/>
+    <bean id="timeTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="timeTask"/>
+        <property name="targetMethod" value="run"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="timeTaskCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="timeTaskJob"/>
+        <property name="cronExpression" value="0 0/5 * * * ?"/>
+    </bean>
+
+    每天任务组
+    <bean id="dateTask" class="com.xengine.gate.count.task.DateTask"/>
+    <bean id="dateTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="dateTask"/>
+        <property name="targetMethod" value="run"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="dateTaskCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="dateTaskJob"/>
+        <property name="cronExpression" value="59 13 20 * * ?"/>
+        <property name="concurrent" value = "false" /> 
+        <property name="cronExpression" value="59 59 23 * * ?" />
+       
+    </bean>
+
+    每秒任务组
+    <bean id="secondTask" class="com.xengine.gate.count.task.SecondTask"/>
+    <bean id="secondTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="secondTask"/>
+        <property name="targetMethod" value="run"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <bean id="secondTaskCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="secondTaskJob"/>
+        <property name="cronExpression" value="*/1 * * * * ?"/>
+    </bean>
+
+    每小时开始时任务组
+    <bean id="hourTask" class="com.xengine.gate.count.task.HourTask"/>
+    <bean id="hourTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="hourTask"/>
+        <property name="targetMethod" value="run"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <bean id="hourTaskCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="hourTaskJob"/>
+        <property name="cronExpression" value="0 0 0/1 * * ?"/>
+    </bean>
+    定时器工厂
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="timeTaskCronTrigger"/>
+                <ref bean="dateTaskCronTrigger"/>
+                
+                <ref bean="secondTaskCronTrigger" />
+                
+                <ref bean="hourTaskCronTrigger"/>
+            </list>
+        </property>
+    </bean>
+ -->
+    <!--定时器参数说明:
+    	秒 0-59 , - * /
+		分 0-59 , - * /
+		小时 0-23 , - * /
+		日 1-31 , - * ? / L W C
+		月 1-12 or JAN-DEC , - * /
+		周几 1-7 or SUN-SAT , - * ? / L C #
+		年 (可选字段) empty, 1970-2099 , - * /
+	-->
+
+</beans>

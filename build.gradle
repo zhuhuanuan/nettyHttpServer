@@ -1,0 +1,73 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'findbugs'
+    compileJava.options.encoding = 'UTF-8'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    ext.projectName = "$name"
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+    }
+    dependencies {
+    
+        compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.1'
+         compile group: 'io.netty', name: 'netty-all', version: '4.1.25.Final'
+        compile group: 'org.springframework', name: 'spring-context', version: '5.0.7.RELEASE'
+        compile group: 'org.springframework', name: 'spring-core', version: '5.0.7.RELEASE'
+        compile group: 'org.springframework', name: 'spring-beans', version: '5.0.7.RELEASE'
+        compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.7.RELEASE'
+        compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'        
+        compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+        compile group: 'com.alibaba', name: 'fastjson', version: '1.2.58'    
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'      
+		compile group: 'commons-lang', name: 'commons-lang', version: '2.6'		
+		compile group: 'commons-net', name: 'commons-net', version: '3.6'
+        compile(
+                fileTree(dir: '../libs', include: '*.jar'),
+        )
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.0'
+    }
+    // findbugs
+    tasks.withType(FindBugs) {
+        ignoreFailures = true
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+        reportLevel = "high"
+    }
+}
+subprojects {
+    sourceSets.main.java.srcDirs = ["src", "conf"]
+    task initPath {
+        sourceSets.main.java.srcDirs.each { it.mkdirs() }
+    }
+    //清除上次的编译过的文件
+    task clearPj(type: Delete) {
+        delete 'build', 'target'
+    }
+    task copyJar(type: Copy) {
+        from configurations.runtime
+        into('build/libs/lib')
+    }
+    //把JAR复制到目标目录
+    task release(type: Copy, dependsOn: [build, copyJar]) {
+        from 'conf'
+        into('build/libs/conf') // 目标位置
+    }
+    task export(type: Copy) {
+        from 'build/libs'
+        into '../export/' + projectName
+    }
+    task zip(type: Zip) {
+        from 'build/libs'
+    }
+    task copyzip(type: Copy) {
+        from 'build/distributions'
+        into '../export/zip/'
+    }
+}

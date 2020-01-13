@@ -1,0 +1,9 @@
+
+jar {
+    String someString = '. ./conf/'
+    configurations.runtime.each { someString = someString + " lib//" + it.name }
+    manifest {
+        attributes 'Main-Class': 'liu.yue.xin.chen.com.main.ScoketApp'
+        attributes 'Class-Path': someString
+    }
+}

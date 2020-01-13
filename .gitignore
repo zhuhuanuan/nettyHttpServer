@@ -1,0 +1,77 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+##class file##
+*.class
+*.com 
+*.dll  
+#*.exe  
+*.o
+*.so 
+test-output
+##filter databfile、sln file##
+*.mdb  
+*.ldb  
+*.sln
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.gz
+*.log
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+build
+target
+bin
+logs
+.project
+.classpath
+.settings
+transaction-logs
+
+sw-pom.xml
+*.iml
+/*.iml
+.iml/
+test-config.xml
+.idea
+.gradle/*
+/.gradle/
+/gradle/
+/gradlew
+/transaction-logs
+super-doctor-api/module-gateway/src/main/resources/static/img/test/
+# OSX
+# Icon must end with two \r
+Icon
+
+
+._*
+.DS_Store
+.AppleDouble
+.LSOverride
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+/.sonar/
+sonar-project.properties
+
+/temp
+out
+gen
+rebel.xml
+rebel-remote.xml
+export/*
