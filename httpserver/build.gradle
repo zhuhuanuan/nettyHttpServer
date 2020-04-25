@@ -3,7 +3,7 @@ jar {
     String someString = '. ./conf/'
     configurations.runtime.each { someString = someString + " lib//" + it.name }
     manifest {
-        attributes 'Main-Class': 'liu.yue.xin.chen.com.main.ScoketApp'
+        attributes 'Main-Class': 'liu.yue.xin.chen.com.main.HttpServerApp'
         attributes 'Class-Path': someString
     }
 }

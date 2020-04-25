@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.net.util.Charsets;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -53,7 +54,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 	private static final AsciiString ACCESS_CONTROL_ALLOW_ORIGIN = AsciiString.of("Access-Control-Allow-Origin");
 	private static final AsciiString ACCESS_CONTROL_ALLOW_HEADERS = AsciiString.of("Access-Control-Allow-Headers");
 	private static final AsciiString ACCESS_CONTROL_ALLOW_METHODS = AsciiString.of("Access-Control-Allow-Methods");
-	private static final AsciiString ACCESS_CONTROL_ALLOW_CREDENTIALS = AsciiString.of("Access-Control-Allow-Credentials");
+	private static final AsciiString ACCESS_CONTROL_ALLOW_CREDENTIALS = AsciiString
+			.of("Access-Control-Allow-Credentials");
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
@@ -70,19 +72,29 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 				System.err.println("收到GET的请求！ 请求地址 = " + uri);
 				QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, Charsets.toCharset(CharEncoding.UTF_8));
 				Map<String, List<String>> uriAttributes = queryDecoder.parameters();
+
+				JSONObject params = new JSONObject();
 				// 此处仅打印请求参数（你可以根据业务需求自定义处理）
 				for (Map.Entry<String, List<String>> attr : uriAttributes.entrySet()) {
-					for (String attrVal : attr.getValue()) {
-						System.err.println("Key = " + attr.getKey() + "  values = " + attrVal);
+					List<String> values = attr.getValue();
+					if (CollectionUtils.isEmpty(values)) {
+						continue;
+					}
+					if (values.size() > 1) {
+						// 参数是列表参数
+						params.put(attr.getKey(), values);
+					} else {
+						// 单个参数
+						params.put(attr.getKey(), values.get(0));
 					}
 				}
 				String path = queryDecoder.path();
 				System.err.println("请求的路径 = " + path);
 				// TODO 这里进行分发操作，这里就不编写分发了
-				getDispense(ctx, path, uriAttributes);
-				JsonResult jsonResult = new JsonResult();
-				JSONSerializer jsonSerializer = new JSONSerializer();
-				responsePush(ctx, jsonSerializer.serialize(jsonResult));
+				getDispense(ctx, path, params);
+//				JsonResult jsonResult = new JsonResult();
+//				JSONSerializer jsonSerializer = new JSONSerializer();
+//				responsePush(ctx, jsonSerializer.serialize(jsonResult));
 			} else if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.OPTIONS)) {
 				System.err.println("收到POST或者OPTIONS的请求！ 请求地址 = " + uri);
 				// POST请求,由于你需要从消息体中获取数据,因此有必要把msg转换成FullHttpRequest
@@ -111,9 +123,27 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 	 * @Author 六月星辰
 	 * @Date 2020年1月13日
 	 */
-	private void getDispense(ChannelHandlerContext ctx, String path, Map<String, List<String>> uriAttributes) {
+	private void getDispense(ChannelHandlerContext ctx, String path, JSONObject params) {
 		// TODO 请求的分发操作
-		System.err.println("暂时不进行分发操作！");
+		// System.err.println("暂时不进行分发操作！");
+		try {
+			byte[] content = null;
+			Object response = HandlerDispatcher.dispatcher(liu.yue.xin.chen.com.handler.dispatcher.HttpMethod.GET, path,
+					params);
+			if (response == null) {
+				JsonResult jsonResult = new JsonResult();
+				JSONSerializer jsonSerializer = new JSONSerializer();
+				content = jsonSerializer.serialize(jsonResult);
+			} else {
+				JsonResult jsonResult = new JsonResult(response);
+				JSONSerializer jsonSerializer = new JSONSerializer();
+				content = jsonSerializer.serialize(jsonResult);
+			}
+			responsePush(ctx, content);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -138,7 +168,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 			String jsonStr = fullRequest.content().toString(Charsets.toCharset(CharEncoding.UTF_8));
 			JSONObject params = JSON.parseObject(jsonStr);
 			try {
-				Object response = HandlerDispatcher.dispatcher(liu.yue.xin.chen.com.handler.dispatcher.HttpMethod.POST, url, params);
+				Object response = HandlerDispatcher.dispatcher(liu.yue.xin.chen.com.handler.dispatcher.HttpMethod.POST,
+						url, params);
 				if (response == null) {
 					JsonResult jsonResult = new JsonResult();
 					JSONSerializer jsonSerializer = new JSONSerializer();
@@ -213,7 +244,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 	 * @Date 2020年1月11日
 	 */
 	private void responsePush(ChannelHandlerContext ctx, byte[] content) {
-		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(content));
+		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
+				Unpooled.wrappedBuffer(content));
 		// 允许跨域访问
 		response.headers().set(CONTENT_TYPE, "application/json;charset=UTF-8");
 		response.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");

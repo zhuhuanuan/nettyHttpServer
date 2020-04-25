@@ -13,13 +13,16 @@ import liu.yue.xin.chen.com.handler.dispatcher.HttpParams;
  * @Author 六月星辰
  * @Date 2020年1月11日
  */
-@HttpParams(method = HttpMethod.GET, url = "")
+@HttpParams(method = HttpMethod.GET, url = "/test")
 public class TestGetServer implements HttpServerHandle {
 
 	@Override
 	public Object hanlde(JSONObject params) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO Auto-generated method stub 
+		System.err.println("收到get请求！");
+		JSONObject data = new JSONObject();
+		data.put("msg", "你好");
+		return data;
 	}
 
 }
